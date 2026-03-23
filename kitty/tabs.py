@@ -1131,6 +1131,7 @@ class TabManager:  # {{{
         self.created_in_session_name = startup_session.session_name if startup_session else ''
         self.recent_mouse_events: Deque[TabMouseEvent] = deque()
         self.recent_title_bar_mouse_events: Deque[TabMouseEvent] = deque()
+        self.last_focused_at: float = 0.
         self.wm_name = wm_name
         self.args = args
         self.tab_bar_hidden = get_options().tab_bar_style == 'hidden'
@@ -1732,7 +1733,8 @@ class TabManager:  # {{{
                     prev.button == button and prev2.button == button and
                     prev.action == GLFW_PRESS and prev2.action == GLFW_RELEASE and
                     prev.tab_id == 0 and prev2.tab_id == 0 and
-                    now - prev.at <= ci and now - prev2.at <= 2 * ci
+                    now - prev.at <= ci and now - prev2.at <= 2 * ci and
+                    prev2.at - self.last_focused_at > ci
                 ):  # double click
                     self.new_tab()
                     self.recent_mouse_events.clear()
@@ -1751,7 +1753,8 @@ class TabManager:  # {{{
                                 prev.button == button and prev2.button == button and
                                 prev.action == GLFW_PRESS and prev2.action == GLFW_RELEASE and
                                 prev.tab_id == tab.id and prev2.tab_id == tab.id and
-                                now - prev.at <= ci and now - prev2.at <= 2 * ci
+                                now - prev.at <= ci and now - prev2.at <= 2 * ci and
+                                prev2.at - self.last_focused_at > ci
                             ):  # double click on tab
                                 self.set_active_tab(tab)
                                 get_boss().set_tab_title()
@@ -1783,7 +1786,8 @@ class TabManager:  # {{{
                     prev.button == button and prev2.button == button and
                     prev.action == GLFW_PRESS and prev2.action == GLFW_RELEASE and
                     prev.tab_id == window_id and prev2.tab_id == window_id and
-                    now - prev.at <= ci and now - prev2.at <= 2 * ci
+                    now - prev.at <= ci and now - prev2.at <= 2 * ci and
+                    prev2.at - self.last_focused_at > ci
                 ):  # double click on window title bar
                     if (w := boss.window_id_map.get(window_id)) is not None:
                         w.set_window_title()

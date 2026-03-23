@@ -714,8 +714,14 @@ add_press(Window *w, int button, int modifiers) {
     if (button < 0 || button >= (ssize_t)arraysz(w->click_queues)) return;
     modifiers &= ~GLFW_LOCK_MASK;
     ClickQueue *q = &w->click_queues[button];
-    if (q->length == CLICK_QUEUE_SZ) { memmove(q->clicks, q->clicks + 1, sizeof(Click) * (CLICK_QUEUE_SZ - 1)); q->length--; }
     monotonic_t now = monotonic();
+    // If the OS window just gained focus (within click_interval), clear the click queue so that
+    // the focus-transfer click does not combine with subsequent clicks to form a multi-click.
+    OSWindow *osw = global_state.callback_os_window;
+    if (osw && osw->last_focused_at > 0 && now - osw->last_focused_at <= OPT(click_interval)) {
+        q->length = 0;
+    }
+    if (q->length == CLICK_QUEUE_SZ) { memmove(q->clicks, q->clicks + 1, sizeof(Click) * (CLICK_QUEUE_SZ - 1)); q->length--; }
     static unsigned long num = 0;
     N(0).at = now; N(0).button = button; N(0).modifiers = modifiers; N(0).x = MAX(0, w->mouse_pos.global_x); N(0).y = MAX(0, w->mouse_pos.global_y); N(0).num = ++num;
     q->length++;

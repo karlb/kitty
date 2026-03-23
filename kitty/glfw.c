@@ -645,6 +645,7 @@ window_focus_callback(GLFWwindow *w, int focused) {
         cursor_active_callback(now);
         focus_in_event();
         osw->last_focused_counter = ++focus_counter;
+        osw->last_focused_at = now;
         global_state.check_for_active_animated_images = true;
     }
     osw->last_mouse_activity_at = now;

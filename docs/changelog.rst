@@ -180,6 +180,8 @@ Detailed list of changes
 
 - GLFW: Add ``glfwGetKeyboardRepeatDelay()`` to the GLFW API to query the current keyboard key-repeat initial delay and repeat interval from the OS, implemented for X11, Wayland and Cocoa backends
 
+- Mouse: The first click that transfers focus to the OS Window should not count as the first click of a double-click sequence (:iss:`9734`)
+
 0.46.2 [2026-03-21]
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

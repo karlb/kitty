@@ -1893,6 +1893,8 @@ class Boss:
     def on_focus(self, os_window_id: int, focused: bool) -> None:
         tm = self.os_window_map.get(os_window_id)
         if tm is not None:
+            if focused:
+                tm.last_focused_at = monotonic()
             w = tm.active_window
             if w is not None:
                 w.focus_changed(focused)
